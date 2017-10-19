@@ -22,3 +22,14 @@ Instalar ETCD
 
 Instalar Master
 `export MASTER_PUBLIC_IP=$(cd terraform; terraform output master_public_ip)`
+
+
+Instalar Minions
+`export MINION_PUBLIC_IPS=$(cd terraform; terraform output minion_public_ips)`
+``` shell
+for MINION_IP in $(echo $MINION_PUBLIC_IPS | sed "s/,/ /g")
+do
+    echo "$i"
+done
+
+```
