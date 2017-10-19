@@ -26,4 +26,6 @@ until [ $(curl -sL -w "%{http_code}\\n" "http://localhost:2379/health" -o /dev/n
     printf '.'
     sleep 1
 done;
-printf "\nETCD IS UP!"
+printf '\n'
+
+echo "ETCD IS UP!"
