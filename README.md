@@ -44,6 +44,6 @@ export MINION_PUBLIC_IPS=$(cd terraform; terraform output minion_public_ips)
 
 for MINION_IP in $(echo $MINION_PUBLIC_IPS | sed "s/,/ /g")
 do
-    echo "$i"
+    echo "$MINION_IP"
 done
 ```
