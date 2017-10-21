@@ -78,7 +78,7 @@ module "ami" {
 }
 
 resource "aws_instance" "etcd" {
-  count = "0" # 0/1
+  count = "1" # 0/1
   ami = "${module.ami.ami_id}"
   instance_type = "m3.medium"
   subnet_id = "${aws_subnet.kubernetes.id}"
@@ -93,7 +93,7 @@ resource "aws_instance" "etcd" {
 }
 
 resource "aws_instance" "master" {
-  count = "0" # 0/1
+  count = "1" # 0/1
   ami = "${module.ami.ami_id}"
   instance_type = "m3.medium"
   subnet_id = "${aws_subnet.kubernetes.id}"
