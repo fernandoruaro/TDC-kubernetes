@@ -44,12 +44,22 @@ ssh -i ~/.ssh/TDC.pem ubuntu@${MASTER_PUBLIC_IP} 'bash -s' < scripts/master.sh
 #MINIONS
 MINION_PUBLIC_IPS=$(cd terraform; terraform output minion_public_ips)
 
+./templates/kubelet.service.sh ${MASTER_PUBLIC_IP}
+./templates/kube-proxy.service.sh ${MASTER_PUBLIC_IP}
+./templates/kubeconfig.sh ${MASTER_PUBLIC_IP}
+
 
 for MINION_IP in $(echo $MINION_PUBLIC_IPS | sed "s/,/ /g")
 do
-    ssh-keygen -R ${MINION_IP}
-    ssh-keyscan -H ${MINION_IP} >> ~/.ssh/known_hosts
+  echo "$MINION_IP"
+  ssh-keygen -R ${MINION_IP}
+  ssh-keyscan -H ${MINION_IP} >> ~/.ssh/known_hosts
 
-    scp -i ~/.ssh/TDC.pem keys/* ubuntu@${MINION_IP}:/tmp
-    echo "$MINION_IP"
+  scp -i ~/.ssh/TDC.pem keys/* ubuntu@${MINION_IP}:/tmp
+  scp -i ~/.ssh/TDC.pem tmp/kubelet.service ubuntu@${MASTER_PUBLIC_IP}:/tmp
+  scp -i ~/.ssh/TDC.pem tmp/kube-proxy.service ubuntu@${MASTER_PUBLIC_IP}:/tmp
+  scp -i ~/.ssh/TDC.pem tmp/kubeconfig ubuntu@${MASTER_PUBLIC_IP}:/tmp
+
+  ssh -i ~/.ssh/TDC.pem ubuntu@${MINION_IP} 'bash -s' < scripts/docker.sh
+  ssh -i ~/.ssh/TDC.pem ubuntu@${MINION_IP} 'bash -s' < scripts/minion.sh
 done
