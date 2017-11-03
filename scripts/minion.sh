@@ -19,6 +19,25 @@ function move_service(){
   chmod 700 /etc/systemd/system/${SERVICE}.service
 }
 
+function move_docker_service(){
+  SERVICE=$1
+  cp /usr/local/src/docker/docker/${SERVICE} /usr/bin/${SERVICE}
+  chmod 0755 /usr/bin/${SERVICE}
+}
+
+function install_docker(){
+  wget -q -O /usr/local/src/docker-1.11.2.tgz https://get.docker.com/builds/Linux/x86_64/docker-1.11.2.tgz
+  mkdir -p /usr/local/src/docker/
+  tar -xvzf /usr/local/src/docker-1.11.2.tgz -C /usr/local/src/docker/
+  move_docker_service "docker"
+  move_docker_service "docker-containerd"
+  move_docker_service "docker-containerd-ctr"
+  move_docker_service "docker-containerd-shim"
+  move_docker_service "docker-runc"
+}
+
+install_docker
+
 move_certificate "kubernetes.pem"
 move_certificate "kubernetes-key.pem"
 move_certificate "ca.pem"
@@ -35,13 +54,16 @@ download_kube_module "kubelet"
 download_kube_module "kube-proxy"
 download_kube_module "kubectl"
 
+move_service "docker"
 move_service "kubelet"
 move_service "kube-proxy"
 
 systemctl daemon-reload
 
+systemctl enable docker
 systemctl enable kubelet
 systemctl enable kube-proxy
 
+systemctl restart docker
 systemctl restart kubelet
 systemctl restart kube-proxy

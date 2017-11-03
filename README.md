@@ -5,6 +5,8 @@ Primeiramente será necessário ter terraform instalado para que possamos provis
 
 Para começar, vamos criar um Key Pair no painel da AWS com o nome de `TDC`. Essa chave será usada para acessarmos os servidores.
 
+sudo apt-get -y -q install awscli jq
+
 
 ``` shell
 export AWS_ACCESS_KEY_ID=SEU_AWS_ACCESS_KEY_ID
