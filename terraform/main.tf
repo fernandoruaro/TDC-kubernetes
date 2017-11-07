@@ -128,3 +128,47 @@ resource "aws_instance" "minion" {
     Name = "minion"
   }
 }
+
+
+######  RECURSOS DE SERVIÇOS  #####
+
+resource "aws_security_group" "k8s_lb_inbound" {
+  name = "k8s_inbound"
+  description = "Allow inbound traffic for kubernetes load balancers"
+  vpc_id = "${aws_vpc.kubernetes.id}"
+  ingress {
+      from_port = 80
+      to_port = 80
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+      from_port = 443
+      to_port = 443
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_elb" "service" {
+  name = "service"
+  listener {
+    instance_port = 30000
+    instance_protocol = "tcp"
+    lb_port = 80
+    lb_protocol = "tcp"
+  }
+  security_groups = ["${aws_security_group.k8s_lb_inbound.id}","${aws_security_group.kubernetes.id}"]
+  subnets = ["${aws_subnet.kubernetes.id}"]
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 5
+    timeout = 5
+    target = "TCP:30000"
+    interval = 10
+  }
+  cross_zone_load_balancing = false
+  idle_timeout = 400
+  connection_draining = false
+  instances = ["${aws_instance.minion.*.id}"]
+}

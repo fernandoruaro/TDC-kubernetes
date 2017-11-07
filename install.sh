@@ -69,7 +69,6 @@ done
 #ROUTES
 ssh -i ~/.ssh/TDC.pem ubuntu@${MASTER_PUBLIC_IP} 'bash -s' < scripts/routes.sh
 scp -i ~/.ssh/TDC.pem ubuntu@${MASTER_PUBLIC_IP}:/tmp/routes tmp/
-
 ROUTE_TABLE_ID=$(cd terraform; terraform output route_table_id)
 ./scripts/aws_routes.sh ${ROUTE_TABLE_ID}
 
@@ -78,3 +77,7 @@ ROUTE_TABLE_ID=$(cd terraform; terraform output route_table_id)
 ./templates/kube-dns.yaml.sh ${MASTER_PUBLIC_IP}
 scp -i ~/.ssh/TDC.pem tmp/kube-dns.yaml ubuntu@${MASTER_PUBLIC_IP}:/tmp
 ssh -i ~/.ssh/TDC.pem ubuntu@${MASTER_PUBLIC_IP} 'bash -s' < scripts/kube-dns.sh
+
+
+#SERVICES
+scp -i ~/.ssh/TDC.pem files/specs.yaml ubuntu@${MASTER_PUBLIC_IP}:/home/ubuntu

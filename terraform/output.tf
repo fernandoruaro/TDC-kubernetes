@@ -13,3 +13,7 @@ output "minion_public_ips" {
 output "route_table_id" {
   value = "${aws_route_table.kubernetes.id}"
 }
+
+output "service_dns_name" {
+  value = "${aws_elb.service.dns_name}"
+}
