@@ -5,8 +5,15 @@ Primeiramente será necessário ter terraform instalado para que possamos provis
 
 Para começar, vamos criar um Key Pair no painel da AWS com o nome de `TDC`. Essa chave será usada para acessarmos os servidores.
 
-sudo apt-get -y -q install awscli jq
+Mova a chave para a pasta ~/.ssh/ no seu computador.
 
+Instale as seguintes dependências:
+
+``` shell
+sudo apt-get -y -q install awscli jq
+```
+
+Configure suas credenciais da AWS:
 
 ``` shell
 export AWS_ACCESS_KEY_ID=SEU_AWS_ACCESS_KEY_ID
@@ -14,38 +21,8 @@ export AWS_SECRET_ACCESS_KEY=SEU_AWS_SECRET_ACCESS_KEY
 export AWS_REGION=us-east-1
 ```
 
-Para verificar o que será criado na AWS:
+Agora é só rodar o arquivo de instalação.
 
 ``` shell
-(cd terraform; terraform plan)
-```
-
-Para confirmar/aplicar:
-
-``` shell
-(cd terraform; terraform apply)
-```
-
-Instalar ETCD
-``` shell
-export ETCD_PUBLIC_IP=$(cd terraform; terraform output etcd_public_ip)
-ssh -i ~/.ssh/TDC.pem ubuntu@${ETCD_PUBLIC_IP} 'bash -s' < scripts/docker.sh
-ssh -i ~/.ssh/TDC.pem ubuntu@${ETCD_PUBLIC_IP} 'bash -s' < scripts/etcd.sh
-```
-
-
-Instalar Master
-``` shell
-export MASTER_PUBLIC_IP=$(cd terraform; terraform output master_public_ip)
-```
-
-
-Instalar Minions
-``` shell
-export MINION_PUBLIC_IPS=$(cd terraform; terraform output minion_public_ips)
-
-for MINION_IP in $(echo $MINION_PUBLIC_IPS | sed "s/,/ /g")
-do
-    echo "$MINION_IP"
-done
+./install.sh
 ```
