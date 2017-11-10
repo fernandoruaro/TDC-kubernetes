@@ -115,7 +115,7 @@ resource "aws_instance" "master" {
 }
 
 resource "aws_instance" "minion" {
-  count = "1" # 0-N
+  count = "2" # 0-N
   ami = "${module.ami.ami_id}"
   instance_type = "m3.medium"
   subnet_id = "${aws_subnet.kubernetes.id}"
